@@ -2,7 +2,6 @@ plugins {
 	id 'java'
 	id 'org.springframework.boot' version "${springBootVersion}"
 	id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
-	id "org.openapi.generator" version "${openapiGeneratorVersion}"
 }
 
 group = 'pl.bswies'
@@ -31,13 +30,6 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
-	// api
-	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocOpenApiVersion}"
-
-	implementation "org.openapitools:jackson-databind-nullable:${jacksonDatabindNullableVersion}"
-	implementation "javax.annotation:javax.annotation-api:${javaxAnnotationApiVersion}"
-	implementation "io.swagger:swagger-annotations:${swaggerAnnotationsVersion}"
-
 	// warning: unknown enum constant When.MAYBE
 	// reason: class file for javax.annotation.meta.When not found
 	implementation "com.google.code.findbugs:jsr305:${jsr305Version}"
@@ -49,33 +41,3 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
-
-openApiGenerate {
-	generatorName = "java"
-	library = "webclient"
-	configOptions = [
-			serializableModel   : "true",
-			dateLibrary         : "java8",
-			serializationLibrary: "jackson"
-	]
-	outputDir = "$buildDir/generated-sources/openapi".toString()
-	inputSpec = "$rootDir/src/main/resources/contracts/cepik-1.1.3.json".toString()
-	apiPackage = "pl.zajavka.infrastructure.cepik.api"
-	modelPackage = "pl.zajavka.infrastructure.cepik.model"
-}
-
-sourceSets {
-	main {
-		java.srcDirs += "$buildDir/generated-sources/openapi/src/main/java"
-	}
-}
-
-bootJar {
-	archiveFileName = "zabawka.${archiveExtension.get()}"
-}
-
-jar {
-	enabled = false
-}
-
-compileJava.dependsOn tasks.openApiGenerate
