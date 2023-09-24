@@ -7,4 +7,4 @@ server:
 api:
   open-weather-map:
     url: https://api.openweathermap.org
-    apiKey: 4dfbd69f10b6b585f09ac8983fa88e12
+    apiKey: ???
