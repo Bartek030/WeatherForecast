@@ -1,10 +1,13 @@
 package pl.bswies.WeatherApp.business.models;
 
-import lombok.Value;
+import lombok.*;
 
 import java.util.List;
 
-@Value
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class CurrentWeatherData {
     List<WeatherInfo> weather;
     MainConditions main;
