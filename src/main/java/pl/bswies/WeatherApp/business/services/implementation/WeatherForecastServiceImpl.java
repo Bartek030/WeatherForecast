@@ -11,8 +11,6 @@ import pl.bswies.WeatherApp.business.services.WeatherForecastService;
 @RequiredArgsConstructor
 public class WeatherForecastServiceImpl implements WeatherForecastService {
 
-    public static final Integer NUMBER_OF_FORECASTED_DAYS = 7;
-
     private final WebClient webClient;
 
     @Value("${api.open-weather-map.apiKey}")
@@ -21,7 +19,7 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
     @Override
     public WeatherForecastData getWeatherForecastData(final String cityName, final String units, final String lang) {
         final String apiAddress = "/data/2.5/forecast?appid=" + apiKey + "&lang="
-                + lang + "&units=" + units + "&q=" + cityName + "&cnt=" + NUMBER_OF_FORECASTED_DAYS;
+                + lang + "&units=" + units + "&q=" + cityName;
         try {
 
             return webClient.get()
