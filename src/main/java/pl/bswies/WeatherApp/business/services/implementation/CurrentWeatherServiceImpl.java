@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import pl.bswies.WeatherApp.business.models.CurrentWeatherData;
+import pl.bswies.WeatherApp.business.models.WeatherData;
 import pl.bswies.WeatherApp.business.services.CurrentWeatherService;
 
 @Service
@@ -17,12 +17,12 @@ public class CurrentWeatherServiceImpl implements CurrentWeatherService {
     private final WebClient webClient;
 
     @Override
-    public CurrentWeatherData getCurrentWeatherData(final String cityName, final String units, final String lang) {
+    public WeatherData getCurrentWeatherData(final String cityName, final String units, final String lang) {
         try {
             return webClient.get()
                     .uri("/data/2.5/weather?appid=" + apiKey + "&lang=" + lang + "&units=" + units + "&q=" + cityName)
                     .retrieve()
-                    .bodyToMono(CurrentWeatherData.class)
+                    .bodyToMono(WeatherData.class)
                     .block();
         } catch (Exception e) {
             throw new RuntimeException("Weather data cannot be retrieved");
