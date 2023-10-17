@@ -3,19 +3,22 @@ package pl.bswies.WeatherApp.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import pl.bswies.WeatherApp.business.models.WeatherData;
 import pl.bswies.WeatherApp.business.services.CurrentWeatherService;
 import pl.bswies.WeatherApp.util.WeatherDataExample;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import java.nio.charset.StandardCharsets;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = CurrentWeatherController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@AllArgsConstructor
+@AllArgsConstructor(onConstructor = @__(@Autowired))
 class CurrentWeatherControllerTest {
 
     private final MockMvc mockMvc;
@@ -38,15 +41,26 @@ class CurrentWeatherControllerTest {
         // given
         String cityName = "Warszawa";
         WeatherData weatherData = WeatherDataExample.someWeatherData1();
+        String responseBody = objectMapper.writeValueAsString(weatherData);
 
         when(currentWeatherService.getCurrentWeatherData(anyString(), anyString(), anyString()))
-                .thenReturn()
+                .thenReturn(weatherData);
 
         // when then
+        MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
+        parameters.add("units", "metric");
+        parameters.add("lang", "pl");
         String endpoint = CurrentWeatherController.CURRENT_WEATHER_URL;
-        mockMvc.perform(get(endpoint, cityName))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$."))
 
+        final MvcResult result = mockMvc.perform(get(endpoint, cityName)
+                        .params(parameters))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.visibility", is(10000)))
+                .andExpect(jsonPath("$.name", is("Stuttgart")))
+                .andExpect(jsonPath("$.dt", is(1696876829)))
+                .andReturn();
+
+        assertThat(result.getResponse().getContentAsString(StandardCharsets.UTF_8))
+                .isEqualTo(responseBody);
     }
 }
