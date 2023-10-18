@@ -12,56 +12,51 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import pl.bswies.WeatherApp.business.exceptions.WeatherDataNotFoundException;
-import pl.bswies.WeatherApp.business.models.WeatherData;
-import pl.bswies.WeatherApp.business.services.CurrentWeatherService;
-import pl.bswies.WeatherApp.util.WeatherDataExample;
+import pl.bswies.WeatherApp.business.models.WeatherForecastData;
+import pl.bswies.WeatherApp.business.services.WeatherForecastService;
+import pl.bswies.WeatherApp.util.WeatherForecastDataExample;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = CurrentWeatherController.class)
+@WebMvcTest(controllers = WeatherForecastController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-class CurrentWeatherControllerTest {
+class WeatherForecastControllerTest {
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
 
     @MockBean
-    private CurrentWeatherService currentWeatherService;
+    private WeatherForecastService weatherForecastService;
 
     @Test
-    void getCurrentWeatherDataShouldReturnDataCorrectly() throws Exception {
+    void getWeatherForecastShouldReturnDataCorrectly() throws Exception {
         // given
         String cityName = "Warszawa";
-        WeatherData weatherData = WeatherDataExample.someWeatherData1();
-        String responseBody = objectMapper.writeValueAsString(weatherData);
+        WeatherForecastData weatherForecastData = WeatherForecastDataExample.someWeatherForecastData1();
+        String responseBody = objectMapper.writeValueAsString(weatherForecastData);
 
-        when(currentWeatherService.getCurrentWeatherData(anyString(), anyString(), anyString()))
-                .thenReturn(weatherData);
+        when(weatherForecastService.getWeatherForecastData(anyString(), anyString(), anyString()))
+                .thenReturn(weatherForecastData);
 
         // when then
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("units", "metric");
         parameters.add("lang", "pl");
-        String endpoint = CurrentWeatherController.CURRENT_WEATHER_URL;
+        String endpoint = WeatherForecastController.WEATHER_FORECAST_URL;
 
         final MvcResult result = mockMvc.perform(get(endpoint, cityName)
                         .params(parameters))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.visibility", is(10000)))
-                .andExpect(jsonPath("$.name", is("Stuttgart")))
-                .andExpect(jsonPath("$.dt", is(1696876829)))
                 .andReturn();
 
         assertThat(result.getResponse().getContentAsString(StandardCharsets.UTF_8))
@@ -69,19 +64,19 @@ class CurrentWeatherControllerTest {
     }
 
     @Test
-    void getCurrentWeatherDataShouldThrowException() throws Exception {
+    void getWeatherForecastShouldThrownException() throws Exception {
         // given
         String cityName = "Warszawa";
         final String errorMessage = "Weather data cannot be retrieved";
 
-        when(currentWeatherService.getCurrentWeatherData(anyString(), anyString(), anyString()))
+        when(weatherForecastService.getWeatherForecastData(anyString(), anyString(), anyString()))
                 .thenThrow(new WeatherDataNotFoundException(errorMessage));
 
         // when then
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("units", "metric");
         parameters.add("lang", "pl");
-        String endpoint = CurrentWeatherController.CURRENT_WEATHER_URL;
+        String endpoint = WeatherForecastController.WEATHER_FORECAST_URL;
 
         mockMvc.perform(get(endpoint, cityName)
                         .params(parameters))
@@ -91,4 +86,5 @@ class CurrentWeatherControllerTest {
                         assertEquals(errorMessage, Objects.requireNonNull(result.getResolvedException()).getMessage()));
 
     }
+
 }

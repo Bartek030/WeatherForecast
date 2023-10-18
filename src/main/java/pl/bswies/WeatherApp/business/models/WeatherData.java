@@ -2,7 +2,6 @@ package pl.bswies.WeatherApp.business.models;
 
 import lombok.*;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
