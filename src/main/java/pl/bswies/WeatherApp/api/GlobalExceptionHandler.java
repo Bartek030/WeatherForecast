@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import pl.bswies.WeatherApp.api.dto.ExceptionMessage;
+import pl.bswies.WeatherApp.business.exceptions.WeatherDataNotFoundException;
 
 import java.util.Map;
 import java.util.UUID;
@@ -21,15 +22,17 @@ import java.util.UUID;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    private static final Map<Class<?>, HttpStatus> EXCEPTION_STATUS = Map.of();
+    private static final Map<Class<?>, HttpStatus> EXCEPTION_STATUS = Map.of(
+            WeatherDataNotFoundException.class, HttpStatus.SERVICE_UNAVAILABLE
+    );
 
     @Override
     protected ResponseEntity<Object> handleExceptionInternal(
-        @NonNull Exception exception,
-        @Nullable Object body,
-        @NonNull HttpHeaders headers,
-        @NonNull HttpStatusCode statusCode,
-        @NonNull WebRequest request
+            @NonNull Exception exception,
+            @Nullable Object body,
+            @NonNull HttpHeaders headers,
+            @NonNull HttpStatusCode statusCode,
+            @NonNull WebRequest request
     ) {
         final String errorId = UUID.randomUUID().toString();
         log.error("Exception: ID={}, HttpStatus={}", errorId, statusCode, exception);
@@ -46,9 +49,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("Exception: ID={}, HttpStatus={}", errorId, status, exception);
 
         return ResponseEntity
-            .status(status)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(ExceptionMessage.of(errorId));
+                .status(status)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(ExceptionMessage.of(errorId));
     }
 
     public HttpStatus getHttpStatusFromException(final Class<?> exception) {

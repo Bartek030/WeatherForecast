@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import pl.bswies.WeatherApp.business.exceptions.WeatherDataNotFoundException;
 import pl.bswies.WeatherApp.business.models.WeatherForecastData;
 import pl.bswies.WeatherApp.business.services.WeatherForecastService;
 
@@ -28,7 +29,7 @@ public class WeatherForecastServiceImpl implements WeatherForecastService {
                     .bodyToMono(WeatherForecastData.class)
                     .block();
         } catch (Exception e) {
-            throw new RuntimeException("Weather data cannot be retrieved");
+            throw new WeatherDataNotFoundException("Weather data cannot be retrieved");
         }
     }
 }
