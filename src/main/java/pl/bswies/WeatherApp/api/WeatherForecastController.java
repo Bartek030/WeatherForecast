@@ -11,7 +11,7 @@ import pl.bswies.WeatherApp.business.services.WeatherForecastService;
 @RequestMapping(WeatherForecastController.WEATHER_FORECAST_URL)
 public class WeatherForecastController {
 
-    public static final String WEATHER_FORECAST_URL = "forecast/{cityName}";
+    public static final String WEATHER_FORECAST_URL = "/forecast/{cityName}";
 
     private final WeatherForecastService weatherForecastService;
 
