@@ -32,7 +32,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = CurrentWeatherController.class)
 @AutoConfigureMockMvc(addFilters = false)
 @AllArgsConstructor(onConstructor = @__(@Autowired))
-class CurrentWeatherControllerTest {
+class CurrentWeatherControllerTestIT {
 
     private final MockMvc mockMvc;
     private final ObjectMapper objectMapper;
