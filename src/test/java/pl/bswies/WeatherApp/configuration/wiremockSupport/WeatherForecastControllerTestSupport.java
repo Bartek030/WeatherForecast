@@ -4,14 +4,14 @@ import io.restassured.specification.RequestSpecification;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import pl.bswies.WeatherApp.api.CurrentWeatherController;
-import pl.bswies.WeatherApp.business.models.WeatherData;
+import pl.bswies.WeatherApp.api.WeatherForecastController;
+import pl.bswies.WeatherApp.business.models.WeatherForecastData;
 
-public interface CurrentWeatherControllerTestSupport {
+public interface WeatherForecastControllerTestSupport {
 
     RequestSpecification requestSpecification();
 
-    default WeatherData getWeatherData(final String cityName) {
+    default WeatherForecastData getForecastData(final String cityName) {
         MultiValueMap<String, String> parameters = new LinkedMultiValueMap<>();
         parameters.add("units", "metric");
         parameters.add("lang", "pl");
@@ -19,11 +19,11 @@ public interface CurrentWeatherControllerTestSupport {
         return requestSpecification()
                 .pathParam("cityName", cityName)
                 .params(parameters)
-                .get(CurrentWeatherController.CURRENT_WEATHER_URL)
+                .get(WeatherForecastController.WEATHER_FORECAST_URL)
                 .then()
                 .statusCode(HttpStatus.OK.value())
                 .and()
                 .extract()
-                .as(WeatherData.class);
+                .as(WeatherForecastData.class);
     }
 }

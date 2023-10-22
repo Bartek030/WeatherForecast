@@ -9,21 +9,38 @@ import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import pl.bswies.WeatherApp.WeatherAppApplication;
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@ActiveProfiles("test")
+@SpringBootTest(
+        classes = WeatherAppApplication.class,
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RestAssuredIntegrationTestBase extends AbstractIT implements ControllerTestSupport {
 
     protected static WireMockServer wireMockServer;
 
-    private String jSessionIdValue;
-
     @Autowired
     private ObjectMapper objectMapper;
+
+    @BeforeAll
+    static void beforeAll() {
+        wireMockServer = new WireMockServer(wireMockConfig().port(9999).extensions(new ResponseTemplateTransformer(false)));
+        wireMockServer.start();
+    }
+
+    @AfterAll
+    static void afterAll() {
+        wireMockServer.stop();
+    }
 
     @Override
     public ObjectMapper getObjectMapper() {
@@ -35,30 +52,10 @@ public class RestAssuredIntegrationTestBase extends AbstractIT implements Contro
         assertThat(true).isTrue();
     }
 
-    @BeforeAll
-    static void beforeAll() {
-        wireMockServer = new WireMockServer(
-                wireMockConfig()
-                        .port(9999)
-                        .extensions(new ResponseTemplateTransformer(false))
-        );
-        wireMockServer.start();
-    }
-
-    @AfterAll
-    static void afterAll() {
-        wireMockServer.stop();
-    }
-
     public RequestSpecification requestSpecification() {
         return restAssuredBase()
                 .accept(ContentType.JSON)
-                .contentType(ContentType.JSON)
-                .cookie("JSESSIONID", jSessionIdValue);
-    }
-
-    public RequestSpecification requestSpecificationNoAuthentication() {
-        return restAssuredBase();
+                .contentType(ContentType.JSON);
     }
 
     private RequestSpecification restAssuredBase() {
@@ -70,8 +67,14 @@ public class RestAssuredIntegrationTestBase extends AbstractIT implements Contro
     }
 
     private RestAssuredConfig getConfig() {
-        return RestAssuredConfig.config()
+        return RestAssuredConfig
+                .config()
                 .objectMapperConfig(new ObjectMapperConfig()
                         .jackson2ObjectMapperFactory((type, s) -> objectMapper));
+    }
+
+    @AfterEach
+    void afterEach() {
+        wireMockServer.resetAll();
     }
 }
