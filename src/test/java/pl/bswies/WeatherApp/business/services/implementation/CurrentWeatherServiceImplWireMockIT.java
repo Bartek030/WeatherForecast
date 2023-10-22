@@ -10,7 +10,7 @@ import pl.bswies.WeatherApp.configuration.wiremockSupport.WireMockTestSupport;
 import java.math.BigDecimal;
 
 class CurrentWeatherServiceImplWireMockIT extends RestAssuredIntegrationTestBase
-    implements WireMockTestSupport, CurrentWeatherControllerTestSupport {
+        implements WireMockTestSupport, CurrentWeatherControllerTestSupport {
 
     @Test
     void shouldReturnWeatherDataCorrectly() {
