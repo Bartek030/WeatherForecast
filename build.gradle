@@ -47,6 +47,17 @@ dependencies {
 	testImplementation "io.rest-assured:rest-assured:${restAssuredVersion}"
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+jar {
+	manifest {
+		attributes 'Main-Class': 'pl.bswies.WeatherApp.WeatherAppApplication'
+	}
 }
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+compileJava.options.encoding = 'UTF-8'
