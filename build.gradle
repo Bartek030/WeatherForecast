@@ -30,6 +30,9 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 
+	// api
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocOpenApiVersion}"
+
 	// warning: unknown enum constant When.MAYBE
 	// reason: class file for javax.annotation.meta.When not found
 	implementation "com.google.code.findbugs:jsr305:${jsr305Version}"
@@ -44,6 +47,17 @@ dependencies {
 	testImplementation "io.rest-assured:rest-assured:${restAssuredVersion}"
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+jar {
+	manifest {
+		attributes 'Main-Class': 'pl.bswies.WeatherApp.WeatherAppApplication'
+	}
 }
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+}
+
+compileJava.options.encoding = 'UTF-8'

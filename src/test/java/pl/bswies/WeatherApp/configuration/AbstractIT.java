@@ -4,7 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
-public class AbstractIT {
+public abstract class AbstractIT {
 
     @LocalServerPort
     protected int port;
