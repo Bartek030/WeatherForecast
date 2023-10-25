@@ -2,6 +2,7 @@ package pl.bswies.WeatherApp.business.services.implementation;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import pl.bswies.WeatherApp.api.dto.ExceptionMessage;
 import pl.bswies.WeatherApp.business.models.WeatherForecastData;
 import pl.bswies.WeatherApp.configuration.RestAssuredIntegrationTestBase;
 import pl.bswies.WeatherApp.configuration.wiremockSupport.WeatherForecastControllerTestSupport;
@@ -35,5 +36,19 @@ class WeatherForecastServiceImplWireMockIT extends RestAssuredIntegrationTestBas
         Assertions.assertEquals(pressure2, weatherForecastData.getList().get(2).getMain().getPressure());
         Assertions.assertEquals(windSpeed1, weatherForecastData.getList().get(0).getWind().getSpeed());
         Assertions.assertEquals(windSpeed2, weatherForecastData.getList().get(2).getWind().getSpeed());
+    }
+
+    @Test
+    void shouldThrowExceptionWhileGettingForecastData() {
+        // given
+        String cityName = "Stuttgart";
+
+        stubForForecastDataNotSuccessful(wireMockServer, cityName);
+
+        // when
+        final ExceptionMessage exceptionMessage = throwExceptionWhileTryingToGetForecastData(cityName);
+
+        // then
+        Assertions.assertFalse(exceptionMessage.getErrorId().isEmpty());
     }
 }

@@ -3,6 +3,7 @@ package pl.bswies.WeatherApp.configuration.wiremockSupport;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.matching.StringValuePattern;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.Map;
@@ -26,6 +27,20 @@ public interface WireMockTestSupport {
 
     }
 
+    default void stubForCurrentWeatherNotSuccessful(final WireMockServer wireMockServer, final String cityName) {
+        Map<String, StringValuePattern> parameters = Map.of(
+                "units", equalTo("metric"),
+                "lang", equalTo("pl"),
+                "q", equalTo(cityName)
+        );
+
+        wireMockServer.stubFor(get(urlPathEqualTo("/data/2.5/weather"))
+                .withQueryParams(parameters)
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.SERVICE_UNAVAILABLE.value())));
+
+    }
+
     default void stubForWeatherForecast(final WireMockServer wireMockServer, final String cityName) {
         Map<String, StringValuePattern> parameters = Map.of(
                 "units", equalTo("metric"),
@@ -38,6 +53,20 @@ public interface WireMockTestSupport {
                 .willReturn(aResponse()
                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                         .withBodyFile("wiremock/forecastData-1.json")));
+
+    }
+
+    default void stubForForecastDataNotSuccessful(final WireMockServer wireMockServer, final String cityName) {
+        Map<String, StringValuePattern> parameters = Map.of(
+                "units", equalTo("metric"),
+                "lang", equalTo("pl"),
+                "q", equalTo(cityName)
+        );
+
+        wireMockServer.stubFor(get(urlPathEqualTo("/data/2.5/forecast"))
+                .withQueryParams(parameters)
+                .willReturn(aResponse()
+                        .withStatus(HttpStatus.SERVICE_UNAVAILABLE.value())));
 
     }
 }
