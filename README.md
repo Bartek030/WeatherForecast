@@ -19,7 +19,12 @@ fetched from OpenWeatherMap API:
 
 ## Technologies Used
 - Spring Boot v. 3.1.3 (including web, webflux, test)
+- JUnit
+- Mockito
+- Rest Assured v. 5.3.1
+- WireMock v. 2.27.2
 - Lombok
+- Swagger v. 2.2.0
 
 Others:
 - OpenWeatherMap API
@@ -31,10 +36,13 @@ As application user you can use the following features:
 - fetch information about weather forecast for next five days for specified city
 
 ## Usage
-#TBD
+To run this application you need to perform the following steps:
+- install JDK - version 17+
+- download jar file from the repository root folder
+- open command line and execute command: java -jar <file_name>
+
+Note: application is set to run on port 8080 - make sure this port is available on your machine
+
 
 ## Project Status
-Project status: _in progress_.  
-Next steps:
-- Tests
-- Swagger
+Project status: _completed_.
